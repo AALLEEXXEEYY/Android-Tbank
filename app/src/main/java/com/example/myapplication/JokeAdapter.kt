@@ -1,13 +1,17 @@
 package com.example.myapplication
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemJokeBinding
 
-class JokesAdapter : RecyclerView.Adapter<JokesHolder>() {
+class JokesAdapter(private val context: Context) : RecyclerView.Adapter<JokesHolder>() {
+
     private var jokes = emptyList<Joke>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JokesHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemJokeBinding.inflate(inflater)
@@ -16,7 +20,6 @@ class JokesAdapter : RecyclerView.Adapter<JokesHolder>() {
 
     override fun getItemCount(): Int {
         return jokes.size
-
     }
 
     fun setData(newList: List<Joke>) {
@@ -28,5 +31,10 @@ class JokesAdapter : RecyclerView.Adapter<JokesHolder>() {
 
     override fun onBindViewHolder(holder: JokesHolder, position: Int) {
         holder.bind(jokes[position])
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, JokeDetails::class.java)
+            intent.putExtra("jokeIndex", position)
+            context.startActivity(intent)
+        }
     }
 }
