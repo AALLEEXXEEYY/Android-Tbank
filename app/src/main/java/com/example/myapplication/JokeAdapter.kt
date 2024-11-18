@@ -1,38 +1,32 @@
 package com.example.myapplication
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.databinding.ItemJokeBinding
 
-
-class JokeAdapter(private val jokes: List<Joke>) : RecyclerView.Adapter<JokeAdapter.JokeViewHolder>() {
-
-    inner class JokeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val categoryTextView: TextView = itemView.findViewById(R.id.categoryTextView)
-        private val questionTextView: TextView = itemView.findViewById(R.id.questionTextView)
-        private val answerTextView: TextView = itemView.findViewById(R.id.answerTextView)
-
-        fun bind(joke: Joke) {
-            categoryTextView.text = joke.category
-            questionTextView.text = joke.question
-            answerTextView.text = if (joke.answer.length > 40) {
-                "${joke.answer.take(40)}..."
-            } else {
-                joke.answer
-            }
-        }
+class JokesAdapter : RecyclerView.Adapter<JokesHolder>() {
+    private var jokes = emptyList<Joke>()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JokesHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ItemJokeBinding.inflate(inflater)
+        return JokesHolder(binding)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JokeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_joke, parent, false)
-        return JokeViewHolder(view)
+    override fun getItemCount(): Int {
+        return jokes.size
+
     }
 
-    override fun onBindViewHolder(holder: JokeViewHolder, position: Int) {
+    fun setData(newList: List<Joke>) {
+        val diffCallback = JokesDiffUtil(jokes, newList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        jokes = newList
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    override fun onBindViewHolder(holder: JokesHolder, position: Int) {
         holder.bind(jokes[position])
     }
-
-    override fun getItemCount() = jokes.size
 }
